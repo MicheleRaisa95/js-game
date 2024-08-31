@@ -15,7 +15,22 @@ window.addEventListener("load", function () {
   //   tiene traccia delle emissioni dei nemici
   class Particle {}
   //   controlla il personaggio del player
-  class Player {}
+  class Player {
+    constructor(game) {
+      this.game = game;
+      this.width = 120;
+      this.height = 190;
+      this.x = 20;
+      this.y = 120;
+      this.speedY = 0;
+    }
+    update() {
+      this.y += this.speedY;
+    }
+    draw(context) {
+      context.fillRect(this.x, this.y, this.width, this.height);
+    }
+  }
   // Blue print che gestisce i tipi di nemici
   class Enemy {}
 
@@ -26,5 +41,18 @@ window.addEventListener("load", function () {
   // crea punteggio, gestisce il tempo
   class UI {}
   // In questa classe saranno riuniti tutte le logiche sara il cervello del progetto
-  class Game {}
+  class Game {
+    constructor(width, height) {
+      this.width = width;
+      this.height = height;
+      this.player = new Player(this);
+    }
+    update() {
+      this.player.update();
+    }
+    draw(context) {
+      this.player.draw(context);
+    }
+  }
+  const game = new Game(canvas.width, canvas.height);
 });
