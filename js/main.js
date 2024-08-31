@@ -9,7 +9,29 @@ window.addEventListener("load", function () {
   canvas.height = 500;
 
   //   tiene traccia degli input dei players
-  class InputHandler {}
+  class InputHandler {
+    constructor(game) {
+      this.game = game;
+      window.addEventListener("keydown", (e) => {
+        if (
+          e.key === "ArrowUp" ||
+          (e.key === "ArrowDown" && this.game.keys.indexOf(e.key) === -1)
+        ) {
+          this.game.keys.push(e.key);
+        }
+        console.log(this.game.keys);
+      });
+
+      window.addEventListener("keyup", (e) => {
+        const keyIndex = this.game.keys.indexOf(e.key);
+        if (keyIndex > -1) {
+          this.game.keys.splice(keyIndex, 1);
+        }
+        console.log(this.game.keys);
+      });
+    }
+  }
+
   //   tiene traccia dei laser sparati dai players
   class Projectile {}
   //   tiene traccia delle emissioni dei nemici
@@ -23,8 +45,12 @@ window.addEventListener("load", function () {
       this.x = 20;
       this.y = 120;
       this.speedY = 0;
+      this.maxSpeed = 10;
     }
     update() {
+      if (this.game.keys.includes("ArrowUp")) this.speedY = -1;
+      else if (this.game.keys.includes("ArrowDown")) this.speedY = 1;
+      else this.speedY = 0;
       this.y += this.speedY;
     }
     draw(context) {
@@ -46,6 +72,8 @@ window.addEventListener("load", function () {
       this.width = width;
       this.height = height;
       this.player = new Player(this);
+      this.input = new InputHandler(this);
+      this.keys = [];
     }
     update() {
       this.player.update();
