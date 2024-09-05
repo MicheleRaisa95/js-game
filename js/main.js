@@ -130,11 +130,14 @@ window.addEventListener("load", function () {
   class UI {
     constructor(game) {
       this.game = game;
-      this.fontsize = 25;
+      this.fontSize = 25;
       this.fontFamily = "Helvetica";
       this.color = "yellow";
     }
     draw(context) {
+      context.font = this.fontSize + "px" + this.fontFamily;
+      // score
+      context.fillText("Score:" + this.game.score, 20, 40);
       // ammo
       context.fillStyle = this.color;
       for (let i = 0; i < this.game.ammo; i++) {
@@ -159,6 +162,8 @@ window.addEventListener("load", function () {
       this.ammoTimer = 0;
       this.ammoInterval = 500;
       this.gameOver = false;
+      this.score = 0;
+      this.winningScore = 10;
     }
     update(deltaTime) {
       this.player.update();
@@ -178,12 +183,14 @@ window.addEventListener("load", function () {
             enemy.lives--;
             projectile.markedForDeletion = true;
             if (enemy.lives <= 0) {
-              markedForDeletion = true;
-              this.score += enemy.score;
+              enemy.markedForDeletion = true; // Corretto
+              this.score += enemy.score; // Incrementa il punteggio
+              if (this.score > this.winningScore) this.gameOver = true;
             }
           }
         });
       });
+
       this.enemies = this.enemies.filter((enemy) => !enemy.markedForDeletion);
       if (this.enemyTimer > this.enemyInterval && !this.gameOver) {
         this.addEnemy();
