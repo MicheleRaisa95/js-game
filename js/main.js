@@ -148,6 +148,34 @@ window.addEventListener("load", function () {
       for (let i = 0; i < this.game.ammo; i++) {
         context.fillRect(20 + 5 * i, 50, 3, 20);
       }
+      // timer
+      const formattedTime = (this.game.gameTime * 0.001).toFixed();
+      context.fillText("Timer: " + formattedTime, 20, 10);
+      //  game over messages
+      if (this.game.gameOver) {
+        context.textAlign = "center";
+        let message1;
+        let message2;
+        if (this.game.score > this.game.winningScore) {
+          message1 = "You Win!";
+          message2 = "Well done!";
+        } else {
+          message1 = "You lose!";
+          message2 = "Try again next time!";
+        }
+        context.font = "50px" + this.fontFamily;
+        context.fillText(
+          message1,
+          this.game.width * 0.5,
+          this.game.height * 0.5 - 40
+        );
+        context.font = "25px" + this.fontFamily;
+        context.fillText(
+          message2,
+          this.game.width * 0.5,
+          this.game.height * 0.5 + 40
+        );
+      }
       context.restore();
     }
   }
@@ -170,8 +198,12 @@ window.addEventListener("load", function () {
       this.gameOver = false;
       this.score = 0;
       this.winningScore = 10;
+      this.gameTime = 0;
+      this.timeLimit = 5000;
     }
     update(deltaTime) {
+      if (!this.gameOver) this.gameTime += deltaTime;
+      if (this.gameTime > this.timeLimit) this.gameOver = true;
       this.player.update();
       if (this.ammoTimer > this.ammoInterval) {
         if (this.ammo < this.maxAmmo) this.ammo++;
@@ -190,7 +222,7 @@ window.addEventListener("load", function () {
             projectile.markedForDeletion = true;
             if (enemy.lives <= 0) {
               enemy.markedForDeletion = true; // Corretto
-              this.score += enemy.score; // Incrementa il punteggio
+              if (!this.gameOver) this.score += enemy.score; // Incrementa il punteggio
               if (this.score > this.winningScore) this.gameOver = true;
             }
           }
